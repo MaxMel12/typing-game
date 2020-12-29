@@ -1,5 +1,5 @@
 //var WebSocketClient = require('websocket').client;
-var client = new WebSocket('ws:// 3.129.211.204:8080');
+var client = new WebSocket('ws://3.129.211.204:8080');
 
 client.onopen= ()=>{
     console.log("open")
