@@ -14,3 +14,9 @@ increment = () => {
     client.send("test") 
     //console.log(document.getElementById("num").innerHTML)   
 }
+
+client.onmessage = (e) => {
+    d = JSON.stringify(e.data,null,2)
+    console.log("server says: "+d)
+    document.getElementById("num").innerHTML = d
+}
