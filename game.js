@@ -1,10 +1,12 @@
 var WebSocketClient = require('websocket').client;
-var client = new WebSocketClient();
+var client = new WebSocketClient('ws://localhost:8080');
 
-//client
 
-num = 0
+
+//num = 0
 increment = () => {
-    num = num+1 
-    document.getElementById("num").attribute = num    
+    //console.log(num)
+    //num = num+1
+    client.send("test") 
+    console.log(document.getElementById("num").innerHTML)   
 }
