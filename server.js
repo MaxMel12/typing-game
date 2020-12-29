@@ -1,5 +1,6 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
+const event = new Event('send')
 
 let num = 0
 var server = http.createServer((req, res) => {
@@ -19,9 +20,11 @@ wsServer = new WebSocketServer({
 wsServer.on('connect', (connection) => {
     console.log("connected")
     connection.send(num)
+    addEventListener('send',()=>connection.send(num))
     connection.on('message',(m)=>{
         num=num+1
         connection.send(num)
+        dispatchEvent(event)
     })
 });
 
