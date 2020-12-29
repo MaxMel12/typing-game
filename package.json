@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/MaxMel12/typing-game/issues"
   },
-  "homepage": "https://github.com/MaxMel12/typing-game#readme"
+  "homepage": "https://github.com/MaxMel12/typing-game#readme",
+  "dependencies": {
+    "websocket": "^1.0.33"
+  }
 }
