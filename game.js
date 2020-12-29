@@ -1,5 +1,5 @@
 //var WebSocketClient = require('websocket').client;
-var client = new WebSocketClient('ws://localhost:8080');
+var client = new WebSocket('ws://localhost:8080');
 
 
 
