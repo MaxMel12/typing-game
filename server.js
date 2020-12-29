@@ -1,6 +1,7 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-const event = new Event('send')
+const events = require('events')
+const eventEmitter = new events.EventEmitter();
 
 let num = 0
 var server = http.createServer((req, res) => {
@@ -19,12 +20,12 @@ wsServer = new WebSocketServer({
 
 wsServer.on('connect', (connection) => {
     console.log("connected")
+    eventEmitter.on('send',()=>connection.send(num))
     connection.send(num)
-    addEventListener('send',()=>connection.send(num))
     connection.on('message',(m)=>{
         num=num+1
+        eventEmitter.emit('send')
         connection.send(num)
-        dispatchEvent(event)
     })
 });
 
