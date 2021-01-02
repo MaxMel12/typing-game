@@ -11,8 +11,8 @@ var server = http.createServer((req, res) => {
     console.log((new Date()) + ' Received request for ' + req.url);
 });
 
-server.listen(8080, () => {
-    console.log((new Date()) + ' Server is listening on port 8080');
+server.listen(9000, () => {
+    console.log((new Date()) + ' Server is listening on port 9000');
 });
 
 wsServer = new WebSocketServer({

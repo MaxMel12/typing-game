@@ -1,6 +1,6 @@
 //var WebSocketClient = require('websocket').client;
-var client = new WebSocket('ws://3.129.211.204:8080');
-//var client = new WebSocket('ws://localhost:8080');//
+var client = new WebSocket('ws://3.129.211.204:9000');
+//var client = new WebSocket('ws://localhost:9000');//
 
 var id
 
