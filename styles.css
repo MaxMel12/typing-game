@@ -1,0 +1,51 @@
+h1 {
+    color: pink
+}
+p {
+    color: white
+}
+
+#buttoncontainer {
+    display:flex;
+    flex-direction: column;
+    height:fit-content;
+}
+
+.btn {
+    padding: 5px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+    border-style: solid;
+    color:white;
+    margin-top: 10px;
+    text-align: center;
+    display: inline-block;
+    width:fit-content;
+    font-size: large;
+    height:min-content;
+}
+
+.btn:hover {
+    border-width: 3px;
+}
+
+#changename {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 50px;
+}
+
+#username-inp {
+    height:20px;
+    margin-right: 10px;
+}
+
+.progress-bar-container{
+    display: flex;
+}
+
+.player-name{
+    width:100px;
+}
