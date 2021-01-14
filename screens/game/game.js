@@ -1,11 +1,12 @@
-//var WebSocketClient = require('websocket').client;
-var client = new WebSocket('ws://3.129.211.204:9000');
-//var client = new WebSocket('ws://localhost:9000');//
+//const address = '3.129.211.204'
+const address = 'localhost'
 
-var id
+var client = new WebSocket('ws://'+address+':9000');
+
+var game, timeout
+var timer = 3
 
 client.onopen= ()=>{
-    console.log("open")
     var name = document.getElementById('username-inp').value
     client.send(JSON.stringify({action:'join_game',payload:{name:name}}))
 }
@@ -19,32 +20,11 @@ window.onload = () => {
     
 }
 
-//num = 0
-//
-increment = () => {
-    console.log(client.readyState)
-    //console.log(num)
-    //num = num+1
-    client.send("test") 
-    //console.log(document.getElementById("num").innerHTML)   
-}
-
-/*client.onmessage = (e) => {
-    d = JSON.stringify(e.data,null,2)
-    console.log("server says: "+d)
-    document.getElementById("num").innerHTML = d
-}*/
-
 client.onmessage = (m) => {
-    d = JSON.parse(m.data)
+    const d = JSON.parse(m.data)
     const {action,payload} = d
-    //console.log("server says: "+JSON.stringify(d.payload))
+
     switch(action){
-        case("players"):
-            for(i=0;i<payload.length;i++){
-                addPlayer(payload[i])
-            }
-            break;
         case("update_players"):
             addPlayer(payload)
             break;
@@ -52,29 +32,42 @@ client.onmessage = (m) => {
             updateProgress(payload)
             break;
         case("join_confirmation"):
-            id = payload
+            document.cookie = `id=${payload.id}`
+            const players = payload.game.players
+            for(var i=0;i<players.length;i++){
+                addPlayer(players[i])
+            }
+            game=payload.game
             break;
         case('update_name'):
             updateName(payload)
             break;
-        case('init_game_confirmation'):
-            id = payload
-            spawnButtons()
-            break;
         case('start'):
-            start()
+            countdown()
+            timeout = setInterval(countdown,1000)
+            break;
+        case('remove_player'):
+            removePlayer(payload)
+            break;
+        case('set_host'):
+            spawnButtons()
             break;
     }
 }
+
+document.getElementById("save-name").addEventListener("click",()=>changeName())
+document.getElementById("input").addEventListener("input",()=>checkInput())
 
 var input, progressBar, passageArr, progress, pos, startTime, endTime
 const comp = "#"
 const inc = "_"
 
-start = () => {
+const start = () => {
     const d = new Date()
     input = document.getElementById("input")
+    input.removeAttribute('disabled')
     input.focus()
+    input.value=""
 
     progress = 0
     
@@ -83,11 +76,11 @@ start = () => {
     startTime =  d.getTime()
 }
 
-host_start = () => {
-    client.send(JSON.stringify({action:'start',payload:''}))
+const hostStart = () => {
+    msg('start')
 }
 
-checkInput = () => {
+const checkInput = () => {
     input = document.getElementById("input")
     if(input.value==passageArr[pos]+" "){
         pos++
@@ -95,15 +88,14 @@ checkInput = () => {
         progress=pos/passageArr.length
         const complete = Math.floor(progress*20)
         progressBar.innerHTML = comp.repeat(complete)+inc.repeat(20-complete)+Math.floor(progress*100)+"%"
-        client.send(JSON.stringify({action:'update_progress',payload:{id:id,progress:progress}}))
+        msg('update_progress',progress)
     }
     if(pos==passageArr.length){
         end()    
     }
-    //console.log("Checked")
 }
 
-end = () => {
+const end = () => {
     const d = new Date()
     endTime = d.getTime()
     const wpm = Math.floor(passageArr.length/((endTime-startTime)/60000))
@@ -111,25 +103,21 @@ end = () => {
     wpmDisp.innerHTML = "WPM: "+wpm
 }
 
-reset = () => {
+const reset = () => {
     input.value=""
     wpmDisp.innerHTML = ""
     progressBar.innerHTML = ""
     progress=0
 }
 
-test = () => {
-    client.send(JSON.stringify({action:"bruh",payload:"bruh"}))
-    console.log("send")
-}
 
-changeName = () => {
+const changeName = () => {
     var newName = document.getElementById("username-inp").value
-    client.send(JSON.stringify({action:"change_name",payload:{id:id,name:newName}}))
+    msg("change_name",{id:getCookie('id'),name:newName})
 }
 
-addPlayer = (player) => {
-    if(player.id==id) return
+const addPlayer = (player) => {
+    if(getCookie('id')==player.id || player==null) return
     var b = document.createElement('div');
     var n = document.createElement('p')
     var bar = document.createElement('p')
@@ -148,18 +136,20 @@ addPlayer = (player) => {
     list.appendChild(b)
 }
 
-updateProgress = (players) => {
-    for (i=0;i<players.length;i++){
-        if(players[i].id==id) continue;
-        const player_id = players[i].id
-        var bar = document.getElementById(player_id).childNodes[1]
-        var progress = players[i].progress
-        const complete = Math.floor(progress*20)
-        bar.innerHTML = comp.repeat(complete)+inc.repeat(20-complete)+Math.floor(progress*100)+"%"
-    }
+const updateProgress = (player) => {
+    const id = getCookie('id')
+    if(player.id==id) return;
+    
+    const player_id = player.id
+    var bar = document.getElementById(player_id).childNodes[1]
+    var progress = player.progress
+    const complete = Math.floor(progress*20)
+    bar.innerHTML = comp.repeat(complete)+inc.repeat(20-complete)+Math.floor(progress*100)+"%"
 }
 
-updateName = (player) => {
+const updateName = (player) => {
+    console.log(player)
+    const id = getCookie('id')
     if(player.id==id){
         document.getElementById('player-name-player').innerHTML = player.name+" (You)"
     } else{
@@ -168,7 +158,7 @@ updateName = (player) => {
     
 }
 
-spawnButtons = () => {
+const spawnButtons = () => {
     var container = document.getElementById('buttoncontainer')
     var start = document.createElement('div')
     var reset = document.createElement('div')
@@ -178,12 +168,46 @@ spawnButtons = () => {
     reset.appendChild(reset_text)
     start.setAttribute('class','btn')
     reset.setAttribute('class','btn')
-    start.setAttribute('onclick','host_start()')
+    start.addEventListener("click",()=>hostStart())
 
     container.appendChild(start)
     container.appendChild(reset)
 }
 
+const removePlayer = (id) => {
+    var list = document.getElementById('progress')
+    var player = document.getElementById(id)
+    list.removeChild(player)
+}
 
-//const passage ="This is a test"
+const msg = (action,payload='') => {
+    const id = getCookie('id')
+    client.send(JSON.stringify({auth:id,action:action,payload:payload}))
+}
+
+const getCookie = (cname) => {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+}
+
+const countdown = () => {
+    document.getElementById('input').value= 'Starting in '+timer
+    if(timer==0){
+        clearInterval(timeout)
+        start() 
+    }
+    timer--
+}
+
 const passage = "Sometimes people are layered like that. There's something totally different underneath than what's on the surface. But sometimes, there's a third, even deeper level, and that one is the same as the top surface one. Like with pie."

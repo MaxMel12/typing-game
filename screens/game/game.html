@@ -1,0 +1,46 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Typing game</title>
+    <link rel="stylesheet" href="game.css">
+</head>
+
+<body>
+    <script type="module" src = "game.js"></script>
+    <!--<button onclick="increment()" type="button">Random number</button> -->
+    <!--<h3 id="num">0</h3>-->
+    <div id="header">
+        <h1>Cold Mess Typing Game</h1>
+        <div id="changename">
+            <p style="margin-right: 10px;">Change Username</p>
+            <input type="text" id="username-inp" size="10">
+            <div class="btn" id="save-name" style="font-weight:bold;font-size: small;">Save name</div>    
+        </div>
+    </div>
+    
+    
+    <div id="buttoncontainer">   
+    </div>
+    
+    <div id="progress">
+        <p style="font-size: x-large;">Players</p>
+        <div class="progress-bar-container">
+            <p id="player-name-player" class="player-name" style="margin-right: 10px">You</p>
+            <p id="progress-bar-player" class="progress-bar">____________________0%</p>    
+        </div>    
+    </div>
+    
+    
+    <div id="passage-container">
+        <input type="text" id="input" size="20" oninput="checkInput()" disabled value="Waiting for host to begin...">
+        <p id="passage">Text to type</p>
+        <p id="wpm"></p>    
+    </div>
+    
+</body>
+
+</html>

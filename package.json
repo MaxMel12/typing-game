@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/MaxMel12/typing-game#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "websocket": "^1.0.33"
   }
 }

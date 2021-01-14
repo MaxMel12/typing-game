@@ -1,0 +1,92 @@
+h1 {
+    color: #666666; 
+    font-family: 'Lucida Sans';
+    align-self: center;
+    font-weight: lighter;
+}
+p {
+    color:rgb(80, 80, 80);
+    user-select: none;
+}
+
+body{
+    background-color:#ebebeb;
+    display: flex;
+    flex-direction: column;
+}
+
+#buttoncontainer {
+    display:flex;
+    height:fit-content;
+}
+
+.btn {
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 1px 1px gray;
+    color: black;
+    text-align: center;
+    display: inline-block;
+    width:fit-content;
+    font-size: large;
+    height:min-content;
+    margin-right: 5px;
+    cursor: pointer;
+    user-select: none;
+    background-color: rgb(245, 245, 245);
+}
+
+.btn:hover {
+    box-shadow: 1px 1px 0px 0px gray;
+}
+
+#changename {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding:5px;
+    box-shadow: 0px 0px 3px 3px gray;
+    padding: 15px;
+    border-radius: 15px;
+
+}
+
+#username-inp {
+    height:20px;
+    margin-right: 10px;
+    border-color: gray;
+    border-radius: 10px;
+}
+
+.progress-bar-container{
+    display: flex;
+}
+
+#progress{
+    display: flex;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    margin-top:20px;
+    flex-direction: column;
+}
+
+.player-name{
+    width:100px;
+}
+
+#passage-container{
+    padding: 15px;
+    border-radius: 15px;
+    background-color:#ebebeb;
+}
+
+input{
+    background-color: #d1d1d121;
+}
+
+#header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
