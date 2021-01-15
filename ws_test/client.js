@@ -1,7 +1,7 @@
 const WebSocket = require('ws')
 const address = 'localhost'
 
-var client = new WebSocket('ws://'+address+':9000');
+var client = new WebSocket('ws://'+address+':9000/host/ASGSD');
 
 client.on('open',()=>{
     client.send("Test")

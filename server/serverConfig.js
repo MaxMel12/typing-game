@@ -1,37 +1,4 @@
-var http = require('http');
-var {Server,event} = require('./server');
-var WebSocketRequest = require('websocket').request;
-
-var servers = []
-for(var i=0;i<5;i++){
-    servers.push(new Server(i))
-}
-
-var server = http.createServer((req, res) => {
-    console.log((new Date()) + ' Received request for ' + req.url);
-});
-
-server.listen(9000, () => {
-    console.log((new Date()) + ' Server is listening on port 9000');
-});
-
-
-
-server.on('upgrade',(request, socket, head)=>{
-    console.log(request.url)
-    const wsRequest = new WebSocketRequest(socket,request,config)
-    try{
-        wsRequest.readHandshake()
-        var connection = wsRequest.accept(wsRequest.requestedProtocols[0], wsRequest.origin)
-        servers[2].wss.handleRequestAccepted(connection)
-    }catch(e){
-        wsRequest.reject()
-        console.log(e)
-        return
-    }
-})
-
-
+//default configs from websocket docs
 
 const config = {
     // The http server instance to attach to.  Required.
@@ -128,3 +95,6 @@ const config = {
     // closing the socket.
     closeTimeout: 5000
 };
+
+
+exports.config = config

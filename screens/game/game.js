@@ -1,12 +1,20 @@
 //const address = '3.129.211.204'
 const address = 'localhost'
 
-var client = new WebSocket('ws://'+address+':9000');
+const p = window.location.pathname
+const q = window.location.search
+var path = q?p+'/'+q:p
+
+
+var client = new WebSocket('ws://'+address+':9000'+path);
+
+
 
 var game, timeout
 var timer = 3
 
 client.onopen= ()=>{
+    console.log('open')
     var name = document.getElementById('username-inp').value
     client.send(JSON.stringify({action:'join_game',payload:{name:name}}))
 }
@@ -38,6 +46,10 @@ client.onmessage = (m) => {
                 addPlayer(players[i])
             }
             game=payload.game
+            var code=payload.code
+            console.log(code)
+            document.getElementById("code").innerHTML=code
+            document.getElementById("passage").innerHTML=game.passage
             break;
         case('update_name'):
             updateName(payload)
@@ -51,6 +63,8 @@ client.onmessage = (m) => {
             break;
         case('set_host'):
             spawnButtons()
+            break;
+        case('update_passage'):
             break;
     }
 }
@@ -71,7 +85,7 @@ const start = () => {
 
     progress = 0
     
-    passageArr = passage.split(' ')
+    passageArr = game.passage.split(' ')
     pos = 0 
     startTime =  d.getTime()
 }
@@ -117,7 +131,7 @@ const changeName = () => {
 }
 
 const addPlayer = (player) => {
-    if(getCookie('id')==player.id || player==null) return
+    if(getCookie('id')==player.id || !player.active) return
     var b = document.createElement('div');
     var n = document.createElement('p')
     var bar = document.createElement('p')
@@ -208,6 +222,10 @@ const countdown = () => {
         start() 
     }
     timer--
+}
+
+const genProgressBar = () => {
+    null
 }
 
 const passage = "Sometimes people are layered like that. There's something totally different underneath than what's on the surface. But sometimes, there's a third, even deeper level, and that one is the same as the top surface one. Like with pie."

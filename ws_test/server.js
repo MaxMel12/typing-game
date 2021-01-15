@@ -13,7 +13,6 @@ class Server {
             eventEmitter.on('test',()=>connection.send("Event sent from server "+this.code))
             connection.on('message',(m)=>{
                 connection.id = 1
-                console.log(connection)
                 connection.send("Response")
                 eventEmitter.emit('test')
             })

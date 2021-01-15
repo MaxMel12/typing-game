@@ -1,68 +1,50 @@
 var WebSocketServer = require('websocket').server;
-var http = require('http');
 const events = require('events')
-const eventEmitter = new events.EventEmitter();
+const passages = require('./passages').passages
 
-eventEmitter.setMaxListeners(20)
-
-var num = 0
-var game
-var status = 0
-
-var server = http.createServer((req, res) => {
-    console.log((new Date()) + ' Received request for ' + req.url);
-});
-
-server.listen(9000, () => {
-    console.log((new Date()) + ' Server is listening on port 9000');
-});
-
-wsServer = new WebSocketServer({
-    httpServer: server,
-    autoAcceptConnections: true
-});
-
-var connections = []
 
 class GameServer {
     constructor(){
-        this.code = ''
+        this.code = this.genGameCode()
         this.game = new Game()
         this.status = 0
         this.wss = new WebSocketServer()
+        this.emitter = new events.EventEmitter();
 
-        this.wss.on('connect'), (connection) => {
+        this.wss.on('connect', (connection) => {
             this.bindEvents(connection)
 
             connection.on('message', (message)=>{
-                this.handleRequest(message)
+                this.handleRequest(connection,message)
             })
 
-            connection.on('close', (connection)=>{
+            connection.on('close', ()=>{
                 this.close(connection)
             })
-        }
+        })
     }
 
     bindEvents(connection){
-        eventEmitter.on('update',()=>this.send(connection, 'players', game.players))
-        eventEmitter.on('update_players',(player)=>this.send(connection,'update_players',player))
-        eventEmitter.on('update_progress',(player)=>this.send(connection,'update_progress',player))
-        eventEmitter.on('update_name',(player)=>this.send(connection,'update_name',{id:player.id,name:player.name}))
-        eventEmitter.on('start',()=>this.send(connection,'start'))
-        eventEmitter.on('remove_player',(id)=>this.send(connection,'remove_player',id))
-        eventEmitter.on('end_game',()=>this.send(connection,'end_game'))
+        this.emitter.on('update',()=>this.send(connection, 'players', this.game.players))
+        this.emitter.on('update_players',(player)=>this.send(connection,'update_players',player))
+        this.emitter.on('update_progress',(player)=>this.send(connection,'update_progress',player))
+        this.emitter.on('update_name',(player)=>this.send(connection,'update_name',{id:player.id,name:player.name}))
+        this.emitter.on('start',()=>this.send(connection,'start'))
+        this.emitter.on('remove_player',(id)=>this.send(connection,'remove_player',id))
+        this.emitter.on('end_game',()=>this.send(connection,'end_game'))
+        null
     }
 
     close(connection){
-        eventEmitter.emit('remove_player', connection.id)
-        game.players[idx].active = 0
+        this.emitter.emit('remove_player', connection.id)
+        const idx = this.game.players.findIndex(p=>p.id==connection.id)
+        this.game.players[idx].active = 0
     }
 
     genGameCode(){
         const length = 5
         var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ3456789';
         var charactersLength = characters.length;
         for ( var i = 0; i < length; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -83,12 +65,26 @@ class GameServer {
         this.wss.handleRequestAccepted(connection)
     }
 
-    handleRequest(message){
-        message = JSON.parse(m.utf8Data)
-        const {auth,action,payload} = message
+    /*get checkStatus(){
+        return this.status
+    }*/
+
+    handleRequest(connection,message){
+        message = JSON.parse(message.utf8Data)
+        const {action,payload} = message
         switch(action){
             case("join_game"):
-                const id = auth ? auth: genPlayerId()
+                
+                //player doesn't even need to have id, it could just be stored in connection
+                //put name in cookie tho so it can be initialized right away
+                /*if(connection.id){
+                    player = this.game.players.find(p=>p.id==connection.id)
+                    this.send(connection,'join_confirmation',{id:connection.id,game:this.game,code:this.code})
+                    this.emitter.emit('update_players',player)
+                    break;
+                }*/
+                
+                const id = this.genPlayerId()
                 const name = payload.name ? payload.name:"Guest "+id
 
                 var player
@@ -101,28 +97,29 @@ class GameServer {
                 this.game.players.push(player)
 
                 connection.id = id
-                this.connections.push(connection)
-                this.send(connection,'join_confirmation',{id:id,game:game})
-                eventEmitter.emit('update_players',player)  
+
+                this.send(connection,'join_confirmation',{id:id,game:this.game,code:this.code})
+                this.emitter.emit('update_players',player)
+                this.status = 1  
                 break;      
             case("update_progress"): 
-                const prog_idx = this.game.players.findIndex(p=>p.id==auth)
+                const prog_idx = this.game.players.findIndex(p=>p.id==connection.id)
                 this.game.players[prog_idx].progress = payload
                 //players[prog_idx].wpm = payload.wpm
-                eventEmitter.emit('update_progress',game.players[prog_idx])
+                this.emitter.emit('update_progress',this.game.players[prog_idx])
                 break;
             case("change_name"):
                 const name_idx = this.game.players.findIndex(p => p.id==payload.id)
-                game.players[name_idx].name = payload.name
-                eventEmitter.emit('update_name',game.players[name_idx])
+                this.game.players[name_idx].name = payload.name
+                this.emitter.emit('update_name',this.game.players[name_idx])
                 break;
             case("start"):
-                const p = game.players.find(p => p.id==auth)
+                const p = this.game.players.find(p => p.id==connection.id)
                 if(p.isHost){
-                    eventEmitter.emit('start')
+                    this.emitter.emit('start')
                     setTimeout(
-                        ()=>eventEmitter.emit('end_game'),
-                        game.time_limit*1000
+                        ()=>this.emitter.emit('end_game'),
+                        this.game.time_limit*1000
                     )
                 }else{
                     this.send(connection,'error','You are not the host!')
@@ -132,97 +129,6 @@ class GameServer {
     }
 }
 
-wsServer.on('connect', (connection) => {
-    //eventEmitter.on('send',()=>connection.send(num))
-    //connection.send(num)
-    eventEmitter.on('update',()=>connection.send(JSON.stringify({action:'players',payload:game.players})))
-    eventEmitter.on('update_players',(player)=>connection.send(JSON.stringify({action:'update_players',payload:player})))
-    eventEmitter.on('update_progress',(player)=>connection.send(JSON.stringify({action:'update_progress',payload:player})))
-    eventEmitter.on('update_name',(player)=>connection.send(JSON.stringify({action:'update_name',payload:{id:player.id,name:player.name}})))
-    eventEmitter.on('start',()=>connection.send(JSON.stringify({action:'start',payload:''})))
-    eventEmitter.on('remove_player',(id)=>connection.send(JSON.stringify({action:'remove_player',payload:id})))
-    eventEmitter.on('end_game',()=>connection.send(msg('end_game')))
-
-    connection.on('message',(m)=>{
-        m = JSON.parse(m.utf8Data)
-        const {auth,action,payload} = m
-        switch(action){
-            case("join_game"):
-                const id = genPlayerId()
-                const name = payload.name?payload.name:"Guest "+id
-
-                var player
-                if(!game.players.length){
-                    player = new Player(id,name,true,0,0)
-                    connection.send(msg('set_host'))
-                }else{
-                    player = new Player(id,name,false,0,0)
-                }
-                game.players.push(player)
-                connections.push({id:id,connection:connection,active:1})
-                connection.send(msg('join_confirmation',{id:id,game:game}))
-                eventEmitter.emit('update_players',player)  
-                break;      
-            case("update_progress"): 
-                const prog_idx = game.players.findIndex(p=>p.id==auth)
-                game.players[prog_idx].progress = payload
-                //players[prog_idx].wpm = payload.wpm
-                eventEmitter.emit('update_progress',game.players[prog_idx])
-                break;
-            case("change_name"):
-                const name_idx = game.players.findIndex(p => p.id==payload.id)
-                game.players[name_idx].name = payload.name
-                eventEmitter.emit('update_name',game.players[name_idx])
-                break;
-            case("start"):
-                const p = game.players.find(p => p.id==auth)
-                if(p.isHost){
-                    eventEmitter.emit('start')
-                    setTimeout(
-                        ()=>eventEmitter.emit('end_game'),
-                        game.time_limit*1000
-                    )
-                }else{
-                    connection.send(msg('error','You are not the host!'))
-                }           
-                break;
-        }
-    })
-
-    connection.on('close',()=>{
-        const conn_to_remove_idx = connections.findIndex(c=>c.connection==connection)
-        const idx = game.players.findIndex(p=>p.id==connections[conn_to_remove_idx].id)
-        eventEmitter.emit('remove_player',game.players[idx].id)
-        game.players[idx].active=0
-        connections[conn_to_remove_idx].active = 0
-    })
-});
-
-const genGameCode = (length) => {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
-
-const initGame = () => {
-    game = new Game()
-    status = 1
-}
-
-const checkStatus = () => {
-    return status
-}
-
-const genPlayerId = () => {
-    const genId = Math.floor(Math.random()*9999)
-    return genId
-}
-
-
 class Player {
     constructor(id,name,isHost,progress,wpm,connection){
         this.id = id
@@ -231,22 +137,21 @@ class Player {
         this.progress = progress
         this.wpm = wpm
         this.connection = connection
+        this.active = 1
     }
 }
 
 class Game {
     constructor(){
-        this.code = genGameCode(5)
         this.players = []
-        this.passage = "Test"
+        this.passage = this.newPassage()
         this.complete = 0
         this.time_limit = 60
     }
+
+    newPassage(){
+        return passages[Math.floor(Math.random()*passages.length)-1]
+    }
 }
 
-const msg = (action, payload='') => {
-    return JSON.stringify({action:action,payload:payload})
-}
-
-exports.initGame = initGame
-exports.status = checkStatus
+exports.GameServer = GameServer
