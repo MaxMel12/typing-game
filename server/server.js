@@ -1,6 +1,6 @@
 var WebSocketServer = require('websocket').server;
 const events = require('events')
-const passages = require('./passages').passages
+const getPassage = require('./passages').getPassage
 
 
 class GameServer {
@@ -32,13 +32,13 @@ class GameServer {
         this.emitter.on('start',()=>this.send(connection,'start'))
         this.emitter.on('remove_player',(id)=>this.send(connection,'remove_player',id))
         this.emitter.on('end_game',()=>this.send(connection,'end_game'))
-        null
     }
 
     close(connection){
         this.emitter.emit('remove_player', connection.id)
         const idx = this.game.players.findIndex(p=>p.id==connection.id)
         this.game.players[idx].active = 0
+        if(this.game.players_online==0){this.resetServer()}
     }
 
     genGameCode(){
@@ -64,10 +64,6 @@ class GameServer {
     addConnection(connection){
         this.wss.handleRequestAccepted(connection)
     }
-
-    /*get checkStatus(){
-        return this.status
-    }*/
 
     handleRequest(connection,message){
         message = JSON.parse(message.utf8Data)
@@ -125,18 +121,30 @@ class GameServer {
                     this.send(connection,'error','You are not the host!')
                 }           
                 break;
+            case("reset"):
+                //get new passage if changepassage==true, reset everything here and send game object
+                break;
+            case("set_passage"):
+                break;
+            case("toggle_change_passage"):
+                this.game.changePassage = !this.game.changePassage
         }
+    }
+
+    resetServer(){
+        this.code = this.genGameCode()
+        this.game = new Game()
+        this.status = 0
     }
 }
 
 class Player {
-    constructor(id,name,isHost,progress,wpm,connection){
+    constructor(id,name,isHost,progress,wpm){
         this.id = id
         this.name = name
         this.isHost = isHost
         this.progress = progress
         this.wpm = wpm
-        this.connection = connection
         this.active = 1
     }
 }
@@ -144,13 +152,24 @@ class Player {
 class Game {
     constructor(){
         this.players = []
-        this.passage = this.newPassage()
+        this.passage = getPassage()
         this.complete = 0
         this.time_limit = 60
+        this.change_passage = true
+    }
+
+    get players_online(){
+        var out = 0
+        for(var p of this.players){
+            if(p.active==1){
+                out++
+            }
+        }
+        return out
     }
 
     newPassage(){
-        return passages[Math.floor(Math.random()*passages.length)-1]
+        this.passage = getPassage()
     }
 }
 

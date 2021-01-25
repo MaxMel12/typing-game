@@ -87,6 +87,7 @@ httpServer.on('upgrade',(request, socket)=>{
     //console.log(url.pathname)
     //console.log(url.searchParams.get("code"))
 
+    //get cookies from wsRequest object
     const wsRequest = new WebSocketRequest(socket,request,config)
 
     try{

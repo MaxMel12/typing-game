@@ -9,7 +9,6 @@ var path = q?p+'/'+q:p
 var client = new WebSocket('ws://'+address+':9000'+path);
 
 
-
 var game, timeout
 var timer = 3
 
@@ -24,7 +23,7 @@ window.onload = () => {
     p.innerHTML=passage
     
     progressBar = document.getElementById("progress-bar-player")
-    progressBar.innerHTML = inc.repeat(20)+"0%"
+    progressBar.innerHTML = genProgressBar(0)
     
 }
 
@@ -100,8 +99,7 @@ const checkInput = () => {
         pos++
         input.value=""
         progress=pos/passageArr.length
-        const complete = Math.floor(progress*20)
-        progressBar.innerHTML = comp.repeat(complete)+inc.repeat(20-complete)+Math.floor(progress*100)+"%"
+        progressBar.innerHTML = genProgressBar(progress)
         msg('update_progress',progress)
     }
     if(pos==passageArr.length){
@@ -118,10 +116,7 @@ const end = () => {
 }
 
 const reset = () => {
-    input.value=""
-    wpmDisp.innerHTML = ""
-    progressBar.innerHTML = ""
-    progress=0
+    msg("reset")
 }
 
 
@@ -140,7 +135,7 @@ const addPlayer = (player) => {
     var list = document.getElementById('progress')
     var name = document.createTextNode(player.name)
 
-    var prog = document.createTextNode(inc.repeat(20)+'0%')
+    var prog = document.createTextNode(genProgressBar(0))
     bar.setAttribute('class','progress-bar')
     bar.appendChild(prog)
     n.appendChild(name)
@@ -157,8 +152,7 @@ const updateProgress = (player) => {
     const player_id = player.id
     var bar = document.getElementById(player_id).childNodes[1]
     var progress = player.progress
-    const complete = Math.floor(progress*20)
-    bar.innerHTML = comp.repeat(complete)+inc.repeat(20-complete)+Math.floor(progress*100)+"%"
+    bar.innerHTML = genProgressBar(progress)
 }
 
 const updateName = (player) => {
@@ -176,16 +170,49 @@ const spawnButtons = () => {
     var container = document.getElementById('buttoncontainer')
     var start = document.createElement('div')
     var reset = document.createElement('div')
+    var custom = document.createElement('div')
     var start_text = document.createTextNode("Start")
     var reset_text = document.createTextNode("Reset")
+    var custom_text = document.createTextNode("Enter Custom Passage")
     start.appendChild(start_text)
     reset.appendChild(reset_text)
+    custom.appendChild(custom_text)
     start.setAttribute('class','btn')
     reset.setAttribute('class','btn')
+    custom.setAttribute('class','btn')
     start.addEventListener("click",()=>hostStart())
+    custom.addEventListener("click",()=>{
+        if(!document.getElementById('passage_input_container')){
+            var passage_input_container = document.createElement('div')
+            var passage_input = document.createElement('input')
+            var save = document.createElement('div')
+            var save_text = document.createTextNode('Save')
+            var cancel = document.createElement('div')
+            var cancel_text = document.createTextNode('Cancel')
+            
+            save.appendChild(save_text)
+            cancel.appendChild(cancel_text)
+
+            save.setAttribute("class","btn")
+            cancel.setAttribute("class","btn")
+
+            passage_input_container.setAttribute('id','passage_input_container')
+            passage_input.setAttribute('id','passage_input')
+            save.addEventListener("click",()=>savePassage())
+
+            cancel.addEventListener("click",()=>container.removeChild(passage_input_container))
+
+            passage_input_container.appendChild(passage_input)
+            passage_input_container.appendChild(save)
+            passage_input_container.appendChild(cancel)
+
+            container.appendChild(passage_input_container)
+        }      
+    })
 
     container.appendChild(start)
     container.appendChild(reset)
+    container.appendChild(custom)
 }
 
 const removePlayer = (id) => {
@@ -224,8 +251,18 @@ const countdown = () => {
     timer--
 }
 
-const genProgressBar = () => {
-    null
+const savePassage = () => {
+    const passage = document.getElementById('passage_input').value
+    msg("set_passage",passage)
 }
 
-const passage = "Sometimes people are layered like that. There's something totally different underneath than what's on the surface. But sometimes, there's a third, even deeper level, and that one is the same as the top surface one. Like with pie."
+const genProgressBar = (progress) => {
+    const comp = "#"
+    const inc = "_"
+    const road = "_"
+    const car = "#"
+    const length = 100
+    const complete = Math.floor(progress*length)
+    //return comp.repeat(complete)+inc.repeat(length-complete)+Math.floor(progress*100)+"%"
+    return road.repeat(complete)+car+road.repeat(length-complete)+Math.floor(progress*100)+"%"
+}

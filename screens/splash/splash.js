@@ -8,8 +8,8 @@ document.getElementById("join_btn").addEventListener("click",()=>join())
 
 const join = () => {
     const code = document.getElementById("game-code-inp").value
-    //window.location = '/game/'+code
-    window.location = '/join'
+    window.location = '/join?code='+code
+    //window.location = '/join'
 }
 
 const host = () => {

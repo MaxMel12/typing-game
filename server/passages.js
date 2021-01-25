@@ -18,4 +18,9 @@ passages = [
     "It doesn’t interest me what you do for a living. I want to know what you ache for, and if you dare to dream of meeting your heart’s longing."
 ]
 
-exports.passages = passages
+const getPassage = () => {
+    return passages[Math.floor(Math.random()*passages.length)-1]    
+}
+
+
+exports.getPassage = getPassage
