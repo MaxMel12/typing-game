@@ -28,23 +28,23 @@ app.get('/typing-game',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/splash.html'));
 })
 
-app.get('/splash.js',(req,res)=>{
+app.get('/typing-game/splash.js',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/splash.js'))
 })
 
-app.get('/splash.css',(req,res)=>{
+app.get('/typing-game/splash.css',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/splash.css'))
 })
 
-app.get('/game.html',(req,res)=>{
+app.get('/typing-game/game.html',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.html'))
 })
 
-app.get('/game.js',(req,res)=>{
+app.get('/typing-game/game.js',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.js'))
 })
 
-app.get('/game.css',(req,res)=>{
+app.get('/typing-game/game.css',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.css'))
 })
 
