@@ -8,7 +8,6 @@ var path = q?p+'/'+q:p
 
 var client = new WebSocket('ws://'+address+':9000'+path);
 
-
 var game, timeout
 var timer = 3
 
