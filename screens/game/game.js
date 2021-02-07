@@ -1,5 +1,5 @@
-//const address = '3.129.211.204'
-const address = 'localhost'
+const address = '3.129.211.204'
+//const address = 'localhost'
 
 const p = window.location.pathname
 const q = window.location.search
