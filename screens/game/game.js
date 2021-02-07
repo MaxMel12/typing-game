@@ -19,8 +19,8 @@ client.onopen= ()=>{
 }
 
 window.onload = () => {
-    var p = document.getElementById("passage")
-    p.innerHTML=passage
+    //var p = document.getElementById("remaining")
+    //p.innerHTML=passage
     
     progressBar = document.getElementById("progress-bar-player")
     progressBar.innerHTML = genProgressBar(0)
@@ -48,7 +48,7 @@ client.onmessage = (m) => {
             var code=payload.code
             console.log(code)
             document.getElementById("code").innerHTML=code
-            document.getElementById("passage").innerHTML=game.passage
+            document.getElementById("remaining").innerHTML=game.passage
             break;
         case('update_name'):
             updateName(payload)
@@ -71,7 +71,7 @@ client.onmessage = (m) => {
 document.getElementById("save-name").addEventListener("click",()=>changeName())
 document.getElementById("input").addEventListener("input",()=>checkInput())
 
-var input, progressBar, passageArr, progress, pos, startTime, endTime
+var input, progressBar, passageArr, progress, pos, startTime, endTime, rightChars, wrongChars
 const comp = "#"
 const inc = "_"
 
@@ -95,13 +95,35 @@ const hostStart = () => {
 
 const checkInput = () => {
     input = document.getElementById("input")
+
+    var i=0
+
     if(input.value==passageArr[pos]+" "){
         pos++
         input.value=""
         progress=pos/passageArr.length
-        progressBar.innerHTML = genProgressBar(progress)
-        msg('update_progress',progress)
+
+        const d = new Date()
+        endTime = d.getTime()
+        const wpm = Math.floor(pos/((endTime-startTime)/60000))
+
+        progressBar.innerHTML = genProgressBar(progress,wpm)
+        msg('update_progress',{progress,wpm})
     }
+
+    while(wrongChars==0 && i<passageArr[pos].length){
+        if(passageArr[pos][i]==input.value[i]){
+            rightChars++
+        }
+        else{
+            wrongChars=input.value.length-rightChars
+        }
+        i++
+        console.log('Right'+rightChars)
+        console.log('Wrong'+wrongChars)
+    }
+
+    colorPassage()
     if(pos==passageArr.length){
         end()    
     }
@@ -149,10 +171,8 @@ const updateProgress = (player) => {
     const id = getCookie('id')
     if(player.id==id) return;
     
-    const player_id = player.id
-    var bar = document.getElementById(player_id).childNodes[1]
-    var progress = player.progress
-    bar.innerHTML = genProgressBar(progress)
+    var bar = document.getElementById(player.id).childNodes[1]
+    bar.innerHTML = genProgressBar(player.progress,player.wpm)
 }
 
 const updateName = (player) => {
@@ -256,7 +276,7 @@ const savePassage = () => {
     msg("set_passage",passage)
 }
 
-const genProgressBar = (progress) => {
+const genProgressBar = (progress,wpm=0) => {
     const comp = "#"
     const inc = "_"
     const road = "_"
@@ -264,5 +284,27 @@ const genProgressBar = (progress) => {
     const length = 100
     const complete = Math.floor(progress*length)
     //return comp.repeat(complete)+inc.repeat(length-complete)+Math.floor(progress*100)+"%"
-    return road.repeat(complete)+car+road.repeat(length-complete)+Math.floor(progress*100)+"%"
+    return road.repeat(complete)+car+road.repeat(length-complete)+" WPM: "+wpm
+}
+
+const colorPassage = () => {
+    const completed = document.getElementById('complete')
+    const wrong = document.getElementById('wrong')
+    const remaining = document.getElementById('remaining')
+
+
+    var compStr = passageArr.slice(0,pos).join(' ')+' '
+    var remStr = passageArr.slice(pos,passageArr.length).join(' ')
+
+    compStr += remStr.slice(0,rightChars)
+
+    //completed.innerHTML = compStr
+    wrong.innerHTML = remStr.slice(rightChars,rightChars+wrongChars)
+    remaining.innerHTML = remStr.slice(rightChars+wrongChars,remStr.length)
+
+    completed.innerHTML = compStr
+    //remaining.innerHTML = remStr
+
+    rightChars=0
+    wrongChars=0
 }

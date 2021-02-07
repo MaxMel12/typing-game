@@ -82,11 +82,40 @@ body{
 }
 
 input{
-    background-color: #d1d1d121;
+    padding-top:5px;
+    padding-bottom:5px;
+    margin-right: 20px;
+    font-size: 15px;
+    cursor: text;
+    color: #666666;
+    border-radius: 10px;
+    border-width: 0px;
 }
 
 #header{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.passage{
+    font-size:12;
+}
+
+#complete{
+    color:rgb(0, 216, 0);
+    font-weight: bold;
+}
+
+#wrong{
+    color:rgb(82, 0, 0);
+    background-color: rgba(255, 122, 98, 0.37);
+}
+
+#remaining{
+    color:gray
+}
+
+#code{
+    user-select: all;
 }

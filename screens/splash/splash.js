@@ -1,6 +1,5 @@
 //const address = '3.129.211.204'
 const address = 'localhost'
-import {bruh} from './test.js'
 
 document.getElementById("host_btn").addEventListener("click",()=>host())
 document.getElementById("solo_btn").addEventListener("click",()=>solo())
@@ -13,7 +12,6 @@ const join = () => {
 }
 
 const host = () => {
-    //bruh()
     window.location = '/host'
 }
 

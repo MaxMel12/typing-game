@@ -98,10 +98,11 @@ class GameServer {
                 this.emitter.emit('update_players',player)
                 this.status = 1  
                 break;      
-            case("update_progress"): 
+            case("update_progress"):
+                const {progress, wpm} = payload
                 const prog_idx = this.game.players.findIndex(p=>p.id==connection.id)
-                this.game.players[prog_idx].progress = payload
-                //players[prog_idx].wpm = payload.wpm
+                this.game.players[prog_idx].progress = progress
+                this.game.players[prog_idx].wpm = wpm
                 this.emitter.emit('update_progress',this.game.players[prog_idx])
                 break;
             case("change_name"):
@@ -135,6 +136,7 @@ class GameServer {
         this.code = this.genGameCode()
         this.game = new Game()
         this.status = 0
+        this.emitter = new events.EventEmitter();
     }
 }
 

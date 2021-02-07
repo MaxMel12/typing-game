@@ -24,7 +24,7 @@ var app = express();
     next()
 })*/
 
-app.get('/',(req,res)=>{
+app.get('/typing-game',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/splash.html'));
 })
 
