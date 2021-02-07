@@ -56,7 +56,7 @@ app.get('/typing-game/game.css',(req,res)=>{
 
 //For players, send them the game html and get the game code from the url when they try to connect to the socket
 var serverIdxStack = []
-app.get('/host',(req,res)=>{
+app.get('typing-game/host',(req,res)=>{
     var s = false
     var i = 0
     while(i<gameServerPool.length && s==false){
@@ -76,7 +76,7 @@ app.get('/test.js',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/test.js'))
 })
 
-app.get('/join', (req,res)=>{
+app.get('typing-game/join', (req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.html'))
 })
 
