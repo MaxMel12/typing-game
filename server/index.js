@@ -92,12 +92,12 @@ httpServer.on('upgrade',(request, socket)=>{
 
     try{
         var serverIdx
-        if(url.pathname=="/join/"){
+        if(url.pathname=="/typing-game/join/"){
             const code = url.searchParams.get("code")
             serverIdx = gameServerPool.findIndex(s=>s.code==code)
             if(serverIdx==-1){throw "Game not found"}
         }
-        else if(url.pathname=="/host"){
+        else if(url.pathname=="/typing-game/host"){
             serverIdx = serverIdxStack.pop()
             if(serverIdx==undefined){throw "No servers available"}
         }else{
