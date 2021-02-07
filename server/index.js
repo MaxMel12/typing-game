@@ -33,7 +33,6 @@ app.get('/typing-game/splash.js',(req,res)=>{
 })
 
 app.get('/typing-game/splash.css',(req,res)=>{
-    console.log("Requesting splash css")
     res.sendFile(path.join(__dirname,'../screens/splash/splash.css'))
 })
 
