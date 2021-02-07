@@ -101,7 +101,7 @@ httpServer.on('upgrade',(request, socket)=>{
             serverIdx = serverIdxStack.pop()
             if(serverIdx==undefined){throw "No servers available"}
         }else{
-            throw "Wrong pathname"
+            throw "Wrong pathname: "+url.pathname
         }    
 
         wsRequest.readHandshake()
