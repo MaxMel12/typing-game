@@ -1,3 +1,8 @@
+@font-face{
+    font-family:'satisfaction';
+    src:url('../../fonts/satisfaction.ttf')
+}
+
 body{
     display: flex;
     background-color:#F8F6E0;
@@ -7,7 +12,7 @@ body{
 
 h1 {
     color: #43291F; 
-    font-family: 'Rockwell';
+    font-family: 'satisfaction';
     align-self: center;
     font-weight: bold;
     font-size: 40px;
