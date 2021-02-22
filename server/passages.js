@@ -21,7 +21,7 @@ const passages = [
     `Your Midas touch on the Chevy door, November flush and your flannel cure, "This dorm was once a madhouse", I made a joke, "Well, it's made for me", How evergreen, our group of friends, Don't think we'll say that word again, And soon they'll have the nerve to deck the halls, That we once walked through, One for the money, two for the show, I never was ready so I watch you go, Sometimes you just don't know the answer, 'Til someone's on their knees and asks you, "She would've made such a lovely bride, What a shame she's fucked in the head," they said, But you'll find the real thing instead, She'll patch up your tapestry that I shred`,
     `The moments of my true story on that album are songs like "Delicate," "New Year’s Day," "Call It What You Want," "Dress." The one-two punch, bait-and-switch of Reputation is that it was actually a love story. It was a love story in amongst chaos. All the weaponized sort of metallic battle anthems were what was going on outside.`,
     `I used to be like a golden retriever, just walking up to everybody, like, wagging my tail. "Sure, yeah, of course! What do you want to know? What do you need?" Now, I guess, I have to be a little bit more like a fox.`,
-    `It was the best of times, the worst of crimes, I struck a match and blew your mind, But I didn't mean it, And you didn’t see it, The ties were black, the lies were white, In shades of gray in candlelight, I wanted to leave him, I needed a reason.`
+    `It was the best of times, the worst of crimes, I struck a match and blew your mind, But I didn't mean it, And you didn't see it, The ties were black, the lies were white, In shades of gray in candlelight, I wanted to leave him, I needed a reason.`
 ]
 
 /*const passages = [
