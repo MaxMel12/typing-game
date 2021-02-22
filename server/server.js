@@ -32,6 +32,8 @@ class GameServer {
         this.emitter.on('start',()=>this.send(connection,'start'))
         this.emitter.on('remove_player',(id)=>this.send(connection,'remove_player',id))
         this.emitter.on('end_game',()=>this.send(connection,'end_game'))
+        this.emitter.on('player_finish',(player)=>this.send(connection,'player_finish',player))
+        this.emitter.on('reset',()=>this.send(connection,'reset',{game:this.game}))
     }
 
     close(connection){
@@ -112,23 +114,49 @@ class GameServer {
                 break;
             case("start"):
                 const p = this.game.players.find(p => p.id==connection.id)
-                if(p.isHost){
+                if(p.isHost && !this.game.isActive){
                     this.emitter.emit('start')
+                    this.game.start()
+                    
                     setTimeout(
-                        ()=>this.emitter.emit('end_game'),
+                        ()=>{
+                            if(this.game.isActive){
+                                this.game.end()
+                                this.emitter.emit('end_game')
+                            }
+        
+                        },
                         this.game.time_limit*1000
                     )
                 }else{
-                    this.send(connection,'error','You are not the host!')
+                    this.send(connection,'error','Not allowed!')
                 }           
-                break;
-            case("reset"):
-                //get new passage if changepassage==true, reset everything here and send game object
                 break;
             case("set_passage"):
                 break;
             case("toggle_change_passage"):
                 this.game.changePassage = !this.game.changePassage
+                break;
+            case("finish"):
+                const finished_idx = this.game.players.findIndex(p=>p.id==connection.id)
+                this.game.players[finished_idx].position = this.game.position
+                this.emitter.emit('update_progress',this.game.players[finished_idx])
+                this.game.position += 1
+                if(this.game.isComplete){
+                    this.emitter.emit('end_game')
+                    if(this.game.isActive){
+                        this.game.end()
+                        this.emitter.emit('end_game')
+                    }
+                }
+                break;
+            case("reset"):
+                const pr = this.game.players.find(p => p.id==connection.id)
+                if(pr.isHost){
+                    this.game.reset()
+                    this.emitter.emit('reset')
+                }
+                break;
         }
     }
 
@@ -148,6 +176,7 @@ class Player {
         this.progress = progress
         this.wpm = wpm
         this.active = 1
+        this.position = 0
     }
 }
 
@@ -155,9 +184,11 @@ class Game {
     constructor(){
         this.players = []
         this.passage = getPassage()
-        this.complete = 0
         this.time_limit = 60
         this.change_passage = true
+        this.current_player_amt = 0
+        this.position = 0
+        this.isActive = 0
     }
 
     get players_online(){
@@ -170,8 +201,35 @@ class Game {
         return out
     }
 
+    get isComplete(){
+        return this.current_player_amt-this.position > 0
+    }
+
     newPassage(){
         this.passage = getPassage()
+    }
+
+    start(){
+        this.current_player_amt = this.players.length
+        this.position = 1
+        this.isActive = 1
+        this.newPassage()
+    }
+
+    end(){
+        this.current_player_amt = 0
+        this.position = 0
+        this.isActive = 0
+    }
+
+    reset(){
+        this.end()
+        this.newPassage()
+        for(var p of this.players){
+            p.progress = 0
+            p.wpm = 0
+            p.position = 0
+        }
     }
 }
 

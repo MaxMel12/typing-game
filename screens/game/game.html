@@ -11,27 +11,38 @@
 
 <body>
     <script type="module" src = "game.js"></script>
-    <!--<button onclick="increment()" type="button">Random number</button> -->
-    <!--<h3 id="num">0</h3>-->
+    
     <div id="header">
-        <h1>The Typing Game</h1>
+        <h1>QuickTyper</h1>
         <div id="changename">
-            <p style="margin-right: 10px;">Change Username</p>
-            <input type="text" id="username-inp" size="10">
-            <div class="btn" id="save-name" style="font-weight:bold;font-size: small;">Save name</div>    
+            <div id="changename-label">Change Name</div>
+            <input type="text" id="username-inp" size="10">    
+            <div class="btn" id="save-name">Save</div>    
         </div>
     </div>
     
     
-    <div id="buttoncontainer">   
+    <div id="buttoncontainer">
+        <div style="display:flex;width:100%;">
+            <div id="start" class="btn" style="margin-right:5px;flex:2">
+                Start
+            </div>
+            <div id="reset" class="btn">
+                Reset
+            </div>
+        </div>
+        <div hidden id="custom" class="btn" style="margin-top:5px;width:100%">
+            Enter Custom Passage
+        </div>   
     </div>
     
+    <p id="code-label">Game code:</p>
+    <p id="code"></p>
     <div id="progress">
-        <p style="font-size: x-large;">Players</p>
-        <p id="code"></p>
         <div class="progress-bar-container">
             <p id="player-name-player" class="player-name" style="margin-right: 10px">You</p>
-            <p id="progress-bar-player" class="progress-bar"></p>    
+            <p id="progress-bar-player" class="progress-bar"></p>
+            <p id="position-player" class="position"></p>    
         </div>    
     </div>
     

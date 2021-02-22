@@ -24,28 +24,36 @@ var app = express();
     next()
 })*/
 
-app.get('/typing-game',(req,res)=>{
+app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/splash.html'));
 })
 
-app.get('/typing-game/splash.js',(req,res)=>{
+app.get('/splash.js',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/splash.js'))
 })
 
-app.get('/typing-game/splash.css',(req,res)=>{
+app.get('/splash.css',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/splash.css'))
 })
 
-app.get('/typing-game/game.html',(req,res)=>{
+app.get('/game.html',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.html'))
 })
 
-app.get('/typing-game/game.js',(req,res)=>{
+app.get('/game.js',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.js'))
 })
 
-app.get('/typing-game/game.css',(req,res)=>{
+app.get('/game.css',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.css'))
+})
+
+app.get('/sparkle.js',(req,res)=>{
+    res.sendFile(path.join(__dirname,'../screens/game/sparkle.js'))
+})
+
+app.get('/fonts/satisfaction.ttf',(req,res)=>{
+    res.sendFile(path.join(__dirname,'../fonts/satisfaction.ttf'))
 })
 
 //make separate host and player html files (can be pretty much identical). Send host game file and set server status to 1.
@@ -56,7 +64,7 @@ app.get('/typing-game/game.css',(req,res)=>{
 
 //For players, send them the game html and get the game code from the url when they try to connect to the socket
 var serverIdxStack = []
-app.get('/typing-game/host',(req,res)=>{
+app.get('/host',(req,res)=>{
     var s = false
     var i = 0
     while(i<gameServerPool.length && s==false){
@@ -76,7 +84,7 @@ app.get('/test.js',(req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/splash/test.js'))
 })
 
-app.get('/typing-game/join', (req,res)=>{
+app.get('/join', (req,res)=>{
     res.sendFile(path.join(__dirname,'../screens/game/game.html'))
 })
 
@@ -92,12 +100,12 @@ httpServer.on('upgrade',(request, socket)=>{
 
     try{
         var serverIdx
-        if(url.pathname=="/typing-game/join/"){
+        if(url.pathname=="/join/"){
             const code = url.searchParams.get("code")
             serverIdx = gameServerPool.findIndex(s=>s.code==code)
             if(serverIdx==-1){throw "Game not found"}
         }
-        else if(url.pathname=="/typing-game/host"){
+        else if(url.pathname=="/host"){
             serverIdx = serverIdxStack.pop()
             if(serverIdx==undefined){throw "No servers available"}
         }else{

@@ -17,8 +17,13 @@ passages = [
     "It doesn't interest me what you do for a living. I want to know what you ache for, and if you dare to dream of meeting your heart's longing."
 ]
 
+/*const passages = [
+    "This is just for testing purposes",
+    "This is also just for testing purposes"
+]*/
+
 const getPassage = () => {
-    return passages[Math.floor(Math.random()*passages.length)-1]    
+    return passages[Math.floor(Math.random()*passages.length)]    
 }
 
 

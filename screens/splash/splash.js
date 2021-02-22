@@ -7,14 +7,14 @@ document.getElementById("join_btn").addEventListener("click",()=>join())
 
 const join = () => {
     const code = document.getElementById("game-code-inp").value
-    window.location = '/typing-game/join?code='+code
+    window.location = '/join?code='+code
     //window.location = '/join'
 }
 
 const host = () => {
-    window.location = '/typing-game/host'
+    window.location = '/host'
 }
 
 const solo = () => {
-    window.location = '/typing-game/solo'
+    window.location = '/solo'
 }
