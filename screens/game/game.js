@@ -1,4 +1,5 @@
-const address = '3.129.211.204'
+//const address = '3.129.211.204'
+const address = 'quicktyper.online'
 //const address = 'localhost'
 
 const p = window.location.pathname
