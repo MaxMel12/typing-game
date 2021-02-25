@@ -56,6 +56,15 @@ app.get('/fonts/satisfaction.ttf',(req,res)=>{
     res.sendFile(path.join(__dirname,'../fonts/satisfaction.ttf'))
 })
 
+app.get('/favicon.ico',(req,res)=>{
+    res.sendFile(path.join(__dirname,'../favicon.ico'))
+})
+
+app.get('/icons/gh.png',(req,res)=>{
+    res.sendFile(path.join(__dirname,'../icons/gh.png'))
+})
+
+
 //make separate host and player html files (can be pretty much identical). Send host game file and set server status to 1.
 //Add server index to a queue and give the next websocket host request the server at the head of the queue in onupgrade
 

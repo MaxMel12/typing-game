@@ -57,6 +57,17 @@ body{
     box-shadow: 1px 1px 0px 0px gray;
 }
 
+.bar-complete {
+    height:15px;
+    background-color: #87C38F;
+}
+
+.bar-incomplete {
+    height:2px;
+    background-color: lightgray;
+    align-self: center;
+}
+
 #changename {
     display: flex;
     flex-direction: row;
@@ -75,6 +86,7 @@ body{
 .progress-bar-container{
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 #progress{
@@ -97,6 +109,9 @@ body{
     font-family: 'Rockwell';
     font-size: 20px;
     color: #43291F;
+    display: flex;
+    flex:1;
+    align-items: center;
 }
 
 #passage-container{
@@ -169,4 +184,36 @@ input{
     font-family: 'Rockwell';
     margin-left:5px;
     font-size: 20px;
+}
+
+#footer{
+    display: flex;
+    flex-direction: column;
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    padding:5px;
+    align-items: left;
+}
+
+#footer-note{
+    font-size:20px;
+    color:#43291F; 
+    font-family: 'Rockwell';
+}
+
+#link{
+    font-size:20px;
+    color:#43291F; 
+    font-family: 'Rockwell';
+    margin-left: 5px;
+}
+
+#gh-icon{
+    width:25px;
+    height:25px
+}
+
+.wpm{
+    margin-left:15px
 }

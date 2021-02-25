@@ -68,3 +68,32 @@ h1 {
     border-color: #cfcebf;
 }
 
+#footer{
+    display: flex;
+    flex-direction: column;
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    padding:5px;
+    align-items: left;
+}
+
+#footer-note{
+    font-size:20px;
+    color:#43291F; 
+    font-weight: bold;
+    font-family: 'Rockwell';
+}
+
+#link{
+    font-size:20px;
+    color:#43291F; 
+    font-weight: bold;
+    font-family: 'Rockwell';
+}
+
+#gh-icon{
+    width:25px;
+    height:25px
+}
+

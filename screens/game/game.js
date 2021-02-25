@@ -1,6 +1,6 @@
 //const address = '3.129.211.204'
-const address = 'quicktyper.online'
-//const address = 'localhost'
+//const address = 'quicktyper.online'
+const address = 'localhost'
 
 const p = window.location.pathname
 const q = window.location.search
@@ -21,7 +21,8 @@ window.onload = () => {
     //p.innerHTML=passage
     
     progressBar = document.getElementById("progress-bar-player")
-    progressBar.innerHTML = genProgressBar(0)
+    //progressBar.innerHTML = genProgressBar(0)
+    genProgressBar(0,0,progressBar)
     
 }
 
@@ -116,7 +117,7 @@ const checkInput = () => {
         endTime = d.getTime()
         const wpm = Math.floor(pos/((endTime-startTime)/60000))
 
-        progressBar.innerHTML = genProgressBar(progress,wpm)
+        genProgressBar(progress,wpm,progressBar)
         msg('update_progress',{progress,wpm})
     }
 
@@ -174,9 +175,8 @@ const addPlayer = (player) => {
     var pos = document.createElement('p')
     pos.setAttribute('class','position')
     
-    var prog = document.createTextNode(genProgressBar(0))
     bar.setAttribute('class','progress-bar')
-    bar.appendChild(prog)
+    genProgressBar(0,0,bar)
     n.appendChild(name)
     n.setAttribute('class','player-name')
 
@@ -197,7 +197,7 @@ const updateProgress = (player) => {
     }else{
         place = document.getElementById(player.id).childNodes[2]
         bar = document.getElementById(player.id).childNodes[1]
-        bar.innerHTML = genProgressBar(player.progress,player.wpm)
+        genProgressBar(player.progress,player.wpm, bar)
     }
 
     place.innerHTML = getPositionStr(player.position)
@@ -295,15 +295,31 @@ const savePassage = () => {
     msg("set_passage",passage)
 }
 
-const genProgressBar = (progress,wpm=0) => {
-    const comp = "#"
-    const inc = "_"
-    const road = "_"
-    const car = "#"
+const genProgressBar = (progress,wpm=0,bar) => {
     const length = 100
     const complete = Math.floor(progress*length)
+
+    if(bar.childNodes.length==0){
+        var comp = document.createElement('span')
+        var inc = document.createElement('span')
+        var wpm_disp = document.createElement('p')
+        comp.setAttribute('class','bar-complete')
+        inc.setAttribute('class','bar-incomplete')
+        wpm_disp.setAttribute('class','wpm')
+
+        
+
+        bar.appendChild(comp)
+        bar.appendChild(inc)
+        bar.appendChild(wpm_disp)
+    }
+
+    bar.childNodes[0].style.flex = complete
+    bar.childNodes[1].style.flex = length-complete
+    bar.childNodes[2].innerHTML = "WPM: "+wpm
+
     //return comp.repeat(complete)+inc.repeat(length-complete)+Math.floor(progress*100)+"%"
-    return road.repeat(complete)+car+road.repeat(length-complete)+" WPM: "+wpm
+    //return road.repeat(complete)+car+road.repeat(length-complete)+" WPM: "+wpm
 }
 
 const colorPassage = () => {
@@ -359,6 +375,7 @@ const resetGame = (_game) => {
     for(var i=0;i<players.length;i++){
         updateProgress(players[i])
     }
-    document.getElementById("progress-bar-player").innerHTML = genProgressBar(0)
+    var bar = document.getElementById("progress-bar-player")
+    genProgressBar(0,0,bar)
     document.getElementById('position-player').innerHTML=""
 }

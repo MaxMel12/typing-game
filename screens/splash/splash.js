@@ -2,7 +2,7 @@
 const address = 'localhost'
 
 document.getElementById("host_btn").addEventListener("click",()=>host())
-document.getElementById("solo_btn").addEventListener("click",()=>solo())
+//document.getElementById("solo_btn").addEventListener("click",()=>solo())
 document.getElementById("join_btn").addEventListener("click",()=>join())
 
 const join = () => {
